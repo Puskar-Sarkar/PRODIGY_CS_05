@@ -1,4 +1,4 @@
-# 🛡️ PRODIGY_CS_05 - Network Packet Analyzer 🕵️‍♂️ 
+# 🛡️ PRODIGY_CS_05 - Network Packet Analyzer  
 
 ## 📌 Description
 This project is a simple yet powerful **packet sniffer** tool built using Python and Scapy. It captures and analyzes network packets in real-time, extracting crucial data such as:
