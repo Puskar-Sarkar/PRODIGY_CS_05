@@ -1,21 +1,38 @@
-from scapy.all import sniff
+from scapy.all import sniff, wrpcap, IP, TCP, UDP, ICMP, Raw
+
+import logging
+
+logging.basicConfig(filename='packet_sniffer.log', 
+                    level=logging.INFO, format='%(asctime)s - %(message)s')
 
 def packet_callback(packet):
-    
-    print(f"Packet: {packet.summary()}")
 
-    if packet.haslayer('IP'):
-        ip_layer = packet['IP']
-        print(f"Source IP: {ip_layer.src}")
-        print(f"Destination IP: {ip_layer.dst}")
-        print(f"Protocol: {ip_layer.proto}")
+    try:
+        src_ip = packet[IP].src
+        dst_ip = packet[IP].dst
+        protocol = packet[IP].proto
+        payload = bytes(packet.payload)
 
-        if packet.haslayer('Raw'):
-            payload = packet['Raw'].load
-            print(f"Payload: {payload}")
+        print(f"Source IP: {src_ip}, Destination IP: {dst_ip}") 
+        print(f"Protocol: {protocol}, Payload: {payload}")
 
-    print("\n")
+        logging.info(f"Source IP: {src_ip}, Destination IP: {dst_ip}")
+        logging.info(f"Protocol: {protocol}, Payload: {payload}")       
+
+    except Exception as e:
+        print(f"Error processing packet: {e}")
+def main():
+
+    print("Starting packet sniffer... Press Ctrl+C to stop.")
+    try:
+        packets = sniff(prn=packet_callback, count=0) 
+    except KeyboardInterrupt:
+        print("Packet sniffing stopped.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+    wrpcap('captured_packets.pcap', packets)
+    print("Captured packets saved to 'captured_packets.pcap'.")
 
 if __name__ == "__main__":
-    print("Starting packet sniffer...")
-    sniff(prn=packet_callback, store=0)
+    main()
